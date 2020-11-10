@@ -20,6 +20,8 @@ Need to have CRAN package `sbtools` installed
 
 This slim template is designed to keep everything in a single remake yaml. So all data munging, manipulation, and file writing happens there, in addition to the sciencebase uploads
 
+
+These are the two different "pushes" to sciencebase, one for xml (metadata) and another for data. It is somewhat arbitrary how these are split up (there could be a single push for all files, or a push for each individual file). I do it this way because I want metadata edits separate from data files, so that the data files aren't replaced everytime I fix a metadata typo or add information to a metadata field. 
 ```yaml
 targets:
   all:
@@ -28,13 +30,14 @@ targets:
       - sb_data
     
 ```
-These are the two different "pushes" to sciencebase, one for xml (metadata) and another for data. It is somewhat arbitrary how these are split up (there could be a single push for all files, or a push for each individual file). I do it this way because I want metadata edits separate from data files, so that the data files aren't replaced everytime I fix a metadata typo or add information to a metadata field. 
 
+Here we define the data release location on sciencebase using the sciencebase identifier. 
 ```yaml
   sbid:
     command: c(I('5faaac68d34eb413d5df1f22'))
 ```
-Here we define the data release location on sciencebase using the sciencebase identifier. 
+
+Read in (`st_read`) and manipulate data here. `extract_feature()` is from the `meddle` package and builds a list of structured spatial information for use in metadata files.
 
 ```yaml
   sf_spatial_data:
@@ -47,8 +50,7 @@ Here we define the data release location on sciencebase using the sciencebase id
   spatial_metadata:
     command: extract_feature(sf_spatial_data)
 ```
-Read in (`st_read`) and manipulate data here. `extract_feature()` is from the `meddle` package and builds a list of structured spatial information for use in metadata files.
-
+write final metadata files as you want them to appear in the data release. 
 ```yaml
   out_data/cars.csv:
     command: file.copy(from = "example_data/example_cars.csv", 
@@ -59,8 +61,8 @@ Read in (`st_read`) and manipulate data here. `extract_feature()` is from the `m
     command: sf_to_zip(zip_filename = target_name, 
       sf_object = sf_spatial_data, layer_name = I('spatial_data'))
 ```
-write final metadata files as you want them to appear in the data release. 
 
+Push the files to sciencebase using these two utility functions that are included in `src/sb_utils.R` of this repo template
 ```yaml
   sb_data:
     command: sb_replace_files(sbid,
@@ -73,5 +75,5 @@ write final metadata files as you want them to appear in the data release.
       spatial_metadata, 
       xml_file = I("out_xml/fgdc_metadata.xml"))
 ```
-Push the files to sciencebase using these two utility functions that are included in `src/sb_utils.R` of this repo template
+
 
