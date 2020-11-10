@@ -4,6 +4,7 @@ packages:
   - tidyverse
   - meddle # at least v0.0.12
   - dssecrets
+  - sbtools
   - sf
 
 sources:
@@ -47,4 +48,4 @@ targets:
       xml_file = I("out_xml/fgdc_metadata.xml"))
       
   sbid:
-    command: c(I('[YOUR_ID_HERE]'))
+    command: c(I('5faaac68d34eb413d5df1f22'))

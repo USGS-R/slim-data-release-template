@@ -54,7 +54,7 @@ entities:
       data-min: NA
       data-max: NA
       data-units: NA
--
+  -
     data-name: example_shapefile.zip
     data-description: A csv file containing...
     attributes:
