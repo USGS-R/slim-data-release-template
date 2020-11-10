@@ -8,7 +8,7 @@ abstract: >-
   nor the U.S. Government shall be held liable for any damages resulting from the authorized or unauthorized use of the data.
       
 authors: ["[NAME 1]", "[NAME 2]"]
-pubdate: format(Sys.time(),'%Y') # replace with actual year, e.g., 2020
+pubdate: 2020 # replace with actual year, e.g., 2020
 doi: https://doi.org/YY.XXXXX/XXXXXX # replace with actual DOI
 
 build-environment: Multiple computer systems were used to generate these data, including linux, OSX. The open source languages R and Python were used on all systems.
