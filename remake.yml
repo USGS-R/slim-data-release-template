@@ -1,0 +1,50 @@
+packages:
+  - yaml
+  - whisker
+  - tidyverse
+  - meddle # at least v0.0.12
+  - dssecrets
+  - sf
+
+sources:
+  - src/sb_utils.R
+  - src/file_utils.R
+
+targets:
+  all:
+    depends:
+      - sb_xml
+      - sb_data
+    
+
+  out_data/cars.csv:
+    command: file.copy(from = "example_data/example_cars.csv", 
+      to = target_name)
+  
+  sf_spatial_data:
+    command: st_read('example_data/example_shapefile/example_shapefile.shp')
+    depends:
+      - example_data/example_shapefile/example_shapefile.dbf
+      - example_data/example_shapefile/example_shapefile.prj
+      - example_data/example_shapefile/example_shapefile.shx
+      
+  out_data/spatial.zip:
+    command: sf_to_zip(zip_filename = target_name, 
+      sf_object = sf_spatial_data, layer_name = I('spatial_data'))
+  
+  spatial_metadata:
+    command: extract_feature(sf_spatial_data)
+  
+  sb_data:
+    command: sb_replace_files(sbid,
+      "out_data/spatial.zip",
+      "out_data/cars.csv")
+      
+  sb_xml:
+    command: sb_render_post_xml(sbid,
+      "in_text/text_data_release.yml",
+      spatial_metadata, 
+      xml_file = I("out_xml/fgdc_metadata.xml"))
+      
+  sbid:
+    command: c(I('[YOUR_ID_HERE]'))
