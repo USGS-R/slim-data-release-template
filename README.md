@@ -62,7 +62,8 @@ write final metadata files as you want them to appear in the data release.
       sf_object = sf_spatial_data, layer_name = I('spatial_data'))
 ```
 
-Push the files to sciencebase using these two utility functions that are included in `src/sb_utils.R` of this repo template
+Push the files to sciencebase using these two utility functions that are included in `src/sb_utils.R` of this repo template. If you are uploading many files at once using `sb_replace_files` (either in a file hash or just multiple files passed in through `...`), it is recommended to use a task table to do so. To enable an internal task table method when using `sb_replace_files`, set the `use_task_table = TRUE` and then specify the arguments `task_yml` (a filename for the task makefile created) and `out_dir` (the directory for putting the final target indicator).
+
 ```yaml
   sb_data:
     command: sb_replace_files(sbid,
