@@ -2,9 +2,8 @@
 #' @param use_task_table logical specifying whether to call `do_item_replace_tasks`
 #' which will create a task_table of the files to push to ScienceBase. This prevents them
 #' all from failing if one fails.
-#' @param task_yml only needed if `use_task_table = TRUE`; task makefile name
 #' 
-sb_replace_files <- function(sb_id, ..., file_hash, use_task_table = FALSE, task_yml){
+sb_replace_files <- function(sb_id, ..., file_hash, use_task_table = FALSE){
   
   files <- c(...)
   
@@ -20,7 +19,7 @@ sb_replace_files <- function(sb_id, ..., file_hash, use_task_table = FALSE, task
   if (!missing(file_hash)){
     hashed_filenames <- yaml.load_file(file_hash) %>% names %>% sort() %>% rev()
     if(use_task_table) {
-      do_item_replace_tasks(hashed_filenames, sb_id, task_yml)
+      do_item_replace_tasks(hashed_filenames, sb_id)
     } else {
       for (file in hashed_filenames){
         item_replace_files(sb_id, files = file)
@@ -30,7 +29,7 @@ sb_replace_files <- function(sb_id, ..., file_hash, use_task_table = FALSE, task
   
   if (length(files) > 0){
     if(use_task_table) {
-      do_item_replace_tasks(files, sb_id, task_yml)
+      do_item_replace_tasks(files, sb_id)
     } else {
       item_replace_files(sb_id, files = files)
     }
@@ -51,7 +50,7 @@ sb_render_post_xml <- function(sb_id, ..., xml_file = NULL){
 }
 
 # Helper function to create a task_table for the files that need to be pushed to SB
-do_item_replace_tasks <- function(files, sb_id, task_yml) {
+do_item_replace_tasks <- function(files, sb_id) {
   
   # Define task table columns
   sb_push <- scipiper::create_task_step(
@@ -72,6 +71,7 @@ do_item_replace_tasks <- function(files, sb_id, task_yml) {
     add_complete = FALSE)
   
   # Create the task remakefile
+  task_yml <- "file_upload_tasks.yml"
   create_task_makefile(
     task_plan = task_plan,
     makefile = task_yml,
@@ -81,4 +81,6 @@ do_item_replace_tasks <- function(files, sb_id, task_yml) {
   # Build the tasks
   loop_tasks(task_plan = task_plan, task_makefile = task_yml, num_tries = 3)
   
+  # Remove the temporary task makefile for uploading the files to ScienceBase
+  file.remove(task_yml)
 }
