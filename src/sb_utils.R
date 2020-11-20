@@ -69,7 +69,7 @@ do_item_replace_tasks <- function(sb_id, files, sources) {
     },
     command = function(task_name, ...){
       sprintf("upload_and_record(I('%s'), '%s')", sb_id, 
-              filter(task_df, task_name == task_name) %>% pull(filepath))
+              filter(task_df, task_name == !!task_name) %>% pull(filepath))
     } 
   )
   
