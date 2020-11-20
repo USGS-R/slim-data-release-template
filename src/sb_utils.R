@@ -10,6 +10,8 @@ sb_replace_files <- function(sb_id, ..., file_hash, use_task_table = TRUE){
   # Throw error if there are no files given to push
   stopifnot(length(files) > 0 | !missing(file_hash))
   
+  # Keep login check here as well as in `upload_and_record` in case the task table
+  # method is not used
   if (!sbtools::is_logged_in()){
     sb_secret <- dssecrets::get_dssecret("cidamanager-sb-srvc-acct")
     sbtools::authenticate_sb(username = sb_secret$username, password = sb_secret$password)
@@ -92,6 +94,14 @@ do_item_replace_tasks <- function(sb_id, files) {
 }
 
 upload_and_record <- function(sb_id, file) {
+  
+  # First verify that you are logged into SB. Need to do this for each task that calls 
+  # `upload_and_record` in case there are any long-running uploads that timeout the session.
+  if (!sbtools::is_logged_in()){
+    sb_secret <- dssecrets::get_dssecret("cidamanager-sb-srvc-acct")
+    sbtools::authenticate_sb(username = sb_secret$username, password = sb_secret$password)
+  }
+  
   # First, upload the file
   item_replace_files(sb_id, file)
   
