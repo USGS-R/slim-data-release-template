@@ -78,12 +78,12 @@ do_item_replace_tasks <- function(files, sb_id, task_yml, out_dir) {
   create_task_makefile(
     task_plan = task_plan,
     makefile = task_yml,
-    include = 'remake.yml',
     packages = c('sbtools'),
-    final_targets = final_target)
+    final_targets = final_target,
+    as_promises = FALSE)
   
   # Build the tasks
   loop_tasks(task_plan = task_plan, task_makefile = task_yml, num_tries = 3)
   
-  return(remake::fetch(sprintf("%s_promise", basename(final_target)), remake_file=task_yml))
+  return(remake::fetch(final_target, remake_file=task_yml))
 }
