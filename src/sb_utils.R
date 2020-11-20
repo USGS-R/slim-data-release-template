@@ -19,7 +19,7 @@ sb_replace_files <- function(sb_id, ..., file_hash, use_task_table = TRUE){
   if (!missing(file_hash)){
     hashed_filenames <- yaml.load_file(file_hash) %>% names %>% sort() %>% rev()
     if(use_task_table) {
-      do_item_replace_tasks(hashed_filenames, sb_id)
+      do_item_replace_tasks(sb_id, hashed_filenames)
     } else {
       for (file in hashed_filenames){
         item_replace_files(sb_id, files = file)
@@ -29,7 +29,7 @@ sb_replace_files <- function(sb_id, ..., file_hash, use_task_table = TRUE){
   
   if (length(files) > 0){
     if(use_task_table) {
-      do_item_replace_tasks(files, sb_id)
+      do_item_replace_tasks(sb_id, files)
     } else {
       item_replace_files(sb_id, files = files)
     }
@@ -50,7 +50,7 @@ sb_render_post_xml <- function(sb_id, ..., xml_file = NULL){
 }
 
 # Helper function to create a task_table for the files that need to be pushed to SB
-do_item_replace_tasks <- function(files, sb_id) {
+do_item_replace_tasks <- function(sb_id, files) {
   
   # Define task table columns
   sb_push <- scipiper::create_task_step(
