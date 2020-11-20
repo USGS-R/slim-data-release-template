@@ -82,7 +82,7 @@ do_item_replace_tasks <- function(sb_id, files, sb_upload_utils_src) {
   create_task_makefile(
     task_plan = task_plan,
     makefile = task_yml,
-    packages = c('sbtools', 'scipiper', 'purrr', 'dplyr'),
+    packages = c('sbtools', 'scipiper', 'dplyr'),
     sources = sb_upload_utils_src,
     final_targets = final_target,
     finalize_funs = "combine_upload_times",
@@ -119,5 +119,5 @@ upload_and_record <- function(sb_id, file) {
 }
 
 combine_upload_times <- function(...) {
-  purrr::reduce(list(...), bind_rows)
+  bind_rows(list(...))
 }
