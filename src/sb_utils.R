@@ -54,8 +54,6 @@ sb_render_post_xml <- function(sb_id, ..., xml_file = NULL){
 
 # Helper function to create a task_table for the files that need to be pushed to SB
 do_item_replace_tasks <- function(files, sb_id, task_yml, out_dir) {
-  # Define task table rows
-  tasks <- basename(files)
   
   # Define task table columns
   sb_push <- scipiper::create_task_step(
@@ -70,7 +68,7 @@ do_item_replace_tasks <- function(files, sb_id, task_yml, out_dir) {
   
   # Create the task plan
   task_plan <- create_task_plan(
-    task_names = tasks,
+    task_names = files, # Define task table rows
     task_steps = list(sb_push),
     final_steps = c('push_file_to_sb'),
     add_complete = FALSE)
