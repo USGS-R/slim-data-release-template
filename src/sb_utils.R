@@ -95,8 +95,12 @@ upload_and_record <- function(sb_id, file) {
   # First, upload the file
   item_replace_files(sb_id, file)
   
+  timestamp <- Sys.time()
+  attr(timestamp, "tzone") <- "UTC"
+  timestamp_chr <- format(timestamp, "%Y-%m-%d %H:%M")
+  
   # Then record when it happened and return that as an obj
-  return(tibble(file = file, sb_id = sb_id, time_uploaded_to_sb = Sys.time()))
+  return(tibble(file = file, sb_id = sb_id, time_uploaded_to_sb = timestamp_chr))
 }
 
 combine_upload_times <- function(...) {
