@@ -2,8 +2,12 @@
 #' @param use_task_table logical specifying whether to call `do_item_replace_tasks`
 #' which will create a task_table of the files to push to ScienceBase. This prevents them
 #' all from failing if one fails. Defaults to `TRUE`.
+#' @param sb_upload_utils_src filepath(s) for where all of the functions that do the sb file
+#' uploading live (`sb_replace_files`, `sb_render_post_xml`, `do_item_replace_tasks`, 
+#' `upload_and_record`, and `combine_upload_times`). It might be easier to put them all in
+#' the same file.
 #' 
-sb_replace_files <- function(sb_id, ..., file_hash, use_task_table = TRUE){
+sb_replace_files <- function(sb_id, ..., file_hash, use_task_table = TRUE, sb_upload_utils_src = "sb_utils.R"){
   
   files <- c(...)
   
@@ -21,7 +25,7 @@ sb_replace_files <- function(sb_id, ..., file_hash, use_task_table = TRUE){
   if (!missing(file_hash)){
     hashed_filenames <- yaml.load_file(file_hash) %>% names %>% sort() %>% rev()
     if(use_task_table) {
-      do_item_replace_tasks(sb_id, hashed_filenames)
+      do_item_replace_tasks(sb_id, hashed_filenames, sb_upload_utils_src)
     } else {
       for (file in hashed_filenames){
         item_replace_files(sb_id, files = file)
@@ -31,7 +35,7 @@ sb_replace_files <- function(sb_id, ..., file_hash, use_task_table = TRUE){
   
   if (length(files) > 0){
     if(use_task_table) {
-      do_item_replace_tasks(sb_id, files)
+      do_item_replace_tasks(sb_id, files, sb_upload_utils_src)
     } else {
       item_replace_files(sb_id, files = files)
     }
@@ -39,7 +43,7 @@ sb_replace_files <- function(sb_id, ..., file_hash, use_task_table = TRUE){
   
 }
 
-sb_render_post_xml <- function(sb_id, ..., xml_file = NULL, use_task_table = TRUE){
+sb_render_post_xml <- function(sb_id, ..., xml_file = NULL, use_task_table = TRUE, sb_upload_utils_src = "sb_utils.R"){
   
   if (is.null(xml_file)){
     xml_file <- file.path(tempdir(), paste0(sb_id,'.xml'))
@@ -47,12 +51,12 @@ sb_render_post_xml <- function(sb_id, ..., xml_file = NULL, use_task_table = TRU
   
   render(filename = xml_file, ...)
   
-  sb_replace_files(sb_id = sb_id, xml_file, use_task_table)
+  sb_replace_files(sb_id = sb_id, xml_file, use_task_table, sb_upload_utils_src)
   
 }
 
 # Helper function to create a task_table for the files that need to be pushed to SB
-do_item_replace_tasks <- function(sb_id, files) {
+do_item_replace_tasks <- function(sb_id, files, sb_upload_utils_src) {
   
   # Define task table columns
   sb_push <- scipiper::create_task_step(
@@ -79,6 +83,7 @@ do_item_replace_tasks <- function(sb_id, files) {
     task_plan = task_plan,
     makefile = task_yml,
     packages = c('sbtools', 'scipiper', 'purrr', 'dplyr'),
+    sources = sb_upload_utils_src,
     final_targets = final_target,
     finalize_funs = "combine_upload_times",
     as_promises = FALSE)
