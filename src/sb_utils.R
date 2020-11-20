@@ -62,7 +62,7 @@ do_item_replace_tasks <- function(files, sb_id, task_yml, out_dir) {
       sprintf("%s_pushed_to_sb", task_name)
     },
     command = function(task_name, ...){
-      sprintf("item_replace_files('%s', '%s')", sb_id, task_name)
+      sprintf("item_replace_files(I('%s'), '%s')", sb_id, task_name)
     } 
   )
   
