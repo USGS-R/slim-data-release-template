@@ -8,6 +8,11 @@
 #' 
 sb_replace_files <- function(sb_id, ..., file_hash, use_task_table = FALSE, task_yml, out_dir){
   
+  files <- c(...)
+  
+  # Throw error if there are no files given to push
+  stopifnot(length(files) > 0 | !missing(file_hash))
+  
   if (!sbtools::is_logged_in()){
     sb_secret <- dssecrets::get_dssecret("cidamanager-sb-srvc-acct")
     sbtools::authenticate_sb(username = sb_secret$username, password = sb_secret$password)
@@ -25,7 +30,6 @@ sb_replace_files <- function(sb_id, ..., file_hash, use_task_table = FALSE, task
     }
   }
   
-  files <- c(...)
   if (length(files) > 0){
     if(use_task_table) {
       do_item_replace_tasks(files, sb_id, task_yml, out_dir)
