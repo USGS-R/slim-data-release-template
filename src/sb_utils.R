@@ -76,7 +76,7 @@ do_item_replace_tasks <- function(sb_id, files) {
   create_task_makefile(
     task_plan = task_plan,
     makefile = task_yml,
-    packages = c('sbtools', 'scipiper', 'purrr'),
+    packages = c('sbtools', 'scipiper', 'purrr', 'dplyr'),
     final_targets = final_target,
     finalize_funs = "combine_upload_times",
     as_promises = FALSE)
