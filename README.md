@@ -62,21 +62,21 @@ write final metadata files as you want them to appear in the data release.
       sf_object = sf_spatial_data, layer_name = I('spatial_data'))
 ```
 
-Push the files to sciencebase using these two utility functions that are included in `src/sb_utils.R` of this repo template. If you are uploading many files at once using `sb_replace_files` (either in a file hash or just multiple files passed in through `...`), it is recommended to use a task table to do so. Internal task table methods are enabled by default. If you do not want to use an internal task table, set the `use_task_table = FALSE` when using `sb_replace_files`. You must also specify the file(s) where the sb_replace_files functions exist using the argument, `sb_upload_utils_src`. These task table instructions apply to `sb_render_post_xml`, too.
+Push the files to sciencebase using these two utility functions that are included in `src/sb_utils.R` of this repo template. If you are uploading many files at once using `sb_replace_files` (either in a file hash or just multiple files passed in through `...`), it is recommended to use a task table to do so. Internal task table methods are enabled by default. If you do not want to use an internal task table, set the `use_task_table = FALSE` when using `sb_replace_files`. You must also specify the file(s) where the sb_replace_files functions exist using the argument, `sources`. These task table instructions apply to `sb_render_post_xml`, too.
 
 ```yaml
   sb_data:
     command: sb_replace_files(sbid,
       "out_data/spatial.zip",
       "out_data/cars.csv",
-      sb_upload_utils_src = "src/sb_utils.R")
+      sources = "src/sb_utils.R")
       
   sb_xml:
     command: sb_render_post_xml(sbid,
       "in_text/text_data_release.yml",
       spatial_metadata, 
       xml_file = I("out_xml/fgdc_metadata.xml"),
-      sb_upload_utils_src = "src/sb_utils.R")
+      sources = "src/sb_utils.R")
 ```
 
 
