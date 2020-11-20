@@ -3,10 +3,8 @@
 #' which will create a task_table of the files to push to ScienceBase. This prevents them
 #' all from failing if one fails.
 #' @param task_yml only needed if `use_task_table = TRUE`; task makefile name
-#' @param out_dir only needed if `use_task_table = TRUE`; path to the directory where 
-#' final target indicators from the task_makefile should go
 #' 
-sb_replace_files <- function(sb_id, ..., file_hash, use_task_table = FALSE, task_yml, out_dir){
+sb_replace_files <- function(sb_id, ..., file_hash, use_task_table = FALSE, task_yml){
   
   files <- c(...)
   
@@ -22,7 +20,7 @@ sb_replace_files <- function(sb_id, ..., file_hash, use_task_table = FALSE, task
   if (!missing(file_hash)){
     hashed_filenames <- yaml.load_file(file_hash) %>% names %>% sort() %>% rev()
     if(use_task_table) {
-      do_item_replace_tasks(hashed_filenames, sb_id, task_yml, out_dir)
+      do_item_replace_tasks(hashed_filenames, sb_id, task_yml)
     } else {
       for (file in hashed_filenames){
         item_replace_files(sb_id, files = file)
@@ -32,7 +30,7 @@ sb_replace_files <- function(sb_id, ..., file_hash, use_task_table = FALSE, task
   
   if (length(files) > 0){
     if(use_task_table) {
-      do_item_replace_tasks(files, sb_id, task_yml, out_dir)
+      do_item_replace_tasks(files, sb_id, task_yml)
     } else {
       item_replace_files(sb_id, files = files)
     }
@@ -53,7 +51,7 @@ sb_render_post_xml <- function(sb_id, ..., xml_file = NULL){
 }
 
 # Helper function to create a task_table for the files that need to be pushed to SB
-do_item_replace_tasks <- function(files, sb_id, task_yml, out_dir) {
+do_item_replace_tasks <- function(files, sb_id, task_yml) {
   
   # Define task table columns
   sb_push <- scipiper::create_task_step(
