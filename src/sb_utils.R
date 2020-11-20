@@ -78,7 +78,7 @@ do_item_replace_tasks <- function(files, sb_id, task_yml, out_dir) {
   create_task_makefile(
     task_plan = task_plan,
     makefile = task_yml,
-    packages = c('sbtools'),
+    packages = c('sbtools', 'scipiper'),
     final_targets = final_target,
     as_promises = FALSE)
   
