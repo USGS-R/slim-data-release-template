@@ -59,7 +59,7 @@ do_item_replace_tasks <- function(sb_id, files) {
       sprintf("%s_pushed_to_sb", task_name)
     },
     command = function(task_name, ...){
-      sprintf("item_replace_files(I('%s'), '%s')", sb_id, task_name)
+      sprintf("upload_and_record(I('%s'), '%s')", sb_id, task_name)
     } 
   )
   
@@ -72,15 +72,33 @@ do_item_replace_tasks <- function(sb_id, files) {
   
   # Create the task remakefile
   task_yml <- "file_upload_tasks.yml"
+  final_target <- "upload_timestamps"
   create_task_makefile(
     task_plan = task_plan,
     makefile = task_yml,
-    packages = c('sbtools', 'scipiper'),
+    packages = c('sbtools', 'scipiper', 'purrr'),
+    final_targets = final_target,
+    finalize_funs = "combine_upload_times",
     as_promises = FALSE)
   
   # Build the tasks
   loop_tasks(task_plan = task_plan, task_makefile = task_yml, num_tries = 3)
+  upload_timestamps <- remake::fetch(final_target, remake_file=task_yml)
   
   # Remove the temporary task makefile for uploading the files to ScienceBase
   file.remove(task_yml)
+  
+  return(upload_timestamps)
+}
+
+upload_and_record <- function(sb_id, file) {
+  # First, upload the file
+  item_replace_files(sb_id, file)
+  
+  # Then record when it happened and return that as an obj
+  return(tibble(file = file, sb_id = sb_id, time_uploaded_to_sb = Sys.time()))
+}
+
+combine_upload_times <- function(...) {
+  purrr::reduce(list(...), bind_rows)
 }
