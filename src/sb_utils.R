@@ -37,7 +37,7 @@ sb_replace_files <- function(sb_id, ..., file_hash, use_task_table = TRUE){
   
 }
 
-sb_render_post_xml <- function(sb_id, ..., xml_file = NULL){
+sb_render_post_xml <- function(sb_id, ..., xml_file = NULL, use_task_table = TRUE){
   
   if (is.null(xml_file)){
     xml_file <- file.path(tempdir(), paste0(sb_id,'.xml'))
@@ -45,7 +45,7 @@ sb_render_post_xml <- function(sb_id, ..., xml_file = NULL){
   
   render(filename = xml_file, ...)
   
-  sb_replace_files(sb_id = sb_id, xml_file)
+  sb_replace_files(sb_id = sb_id, xml_file, use_task_table)
   
 }
 
