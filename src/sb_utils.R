@@ -74,16 +74,13 @@ do_item_replace_tasks <- function(files, sb_id, task_yml, out_dir) {
     add_complete = FALSE)
   
   # Create the task remakefile
-  final_target <- sprintf("%s/%s_files_uploaded.ind", out_dir, gsub(".yml", "", basename(task_yml)))
   create_task_makefile(
     task_plan = task_plan,
     makefile = task_yml,
     packages = c('sbtools', 'scipiper'),
-    final_targets = final_target,
     as_promises = FALSE)
   
   # Build the tasks
   loop_tasks(task_plan = task_plan, task_makefile = task_yml, num_tries = 3)
   
-  return(remake::fetch(final_target, remake_file=task_yml))
 }
