@@ -7,7 +7,7 @@
 #' `do_item_replace_tasks`, `upload_and_record`, and `combine_upload_times` are defined. It 
 #' might be easier to put them all in the same file.
 #' 
-sb_replace_files <- function(sb_id, ..., file_hash, use_task_table = TRUE, sources){
+sb_replace_files <- function(sb_id, ..., file_hash, use_task_table = TRUE, sources = c()){
   
   files <- c(...)
   
@@ -43,7 +43,7 @@ sb_replace_files <- function(sb_id, ..., file_hash, use_task_table = TRUE, sourc
   
 }
 
-sb_render_post_xml <- function(sb_id, ..., xml_file = NULL, use_task_table = TRUE, sources){
+sb_render_post_xml <- function(sb_id, ..., xml_file = NULL, use_task_table = TRUE, sources = c()){
   
   if (is.null(xml_file)){
     xml_file <- file.path(tempdir(), paste0(sb_id,'.xml'))
