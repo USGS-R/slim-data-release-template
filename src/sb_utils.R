@@ -1,9 +1,9 @@
 
 #' @param use_task_table logical specifying whether to call `do_item_replace_tasks`
 #' which will create a task_table of the files to push to ScienceBase. This prevents them
-#' all from failing if one fails.
+#' all from failing if one fails. Defaults to `TRUE`.
 #' 
-sb_replace_files <- function(sb_id, ..., file_hash, use_task_table = FALSE){
+sb_replace_files <- function(sb_id, ..., file_hash, use_task_table = TRUE){
   
   files <- c(...)
   
