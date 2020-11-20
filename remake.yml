@@ -43,10 +43,12 @@ targets:
   sb_data:
     command: sb_replace_files(sbid,
       "out_data/spatial.zip",
-      "out_data/cars.csv")
+      "out_data/cars.csv",
+      sources = "src/sb_utils.R")
       
   sb_xml:
     command: sb_render_post_xml(sbid,
       "in_text/text_data_release.yml",
       spatial_metadata, 
-      xml_file = I("out_xml/fgdc_metadata.xml"))
+      xml_file = I("out_xml/fgdc_metadata.xml"),
+      sources = "src/sb_utils.R")
