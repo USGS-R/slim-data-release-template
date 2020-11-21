@@ -11,34 +11,17 @@ sb_replace_files <- function(sb_id, ..., file_hash, use_task_table = TRUE, sourc
   
   files <- c(...)
   
-  # Throw error if there are no files given to push
-  stopifnot(length(files) > 0 | !missing(file_hash))
-  
-  # Keep login check here as well as in `upload_and_record` in case the task table
-  # method is not used
-  if (!sbtools::is_logged_in()){
-    sb_secret <- dssecrets::get_dssecret("cidamanager-sb-srvc-acct")
-    sbtools::authenticate_sb(username = sb_secret$username, password = sb_secret$password)
-  }
-  
-  hashed_filenames <- c()
   if (!missing(file_hash)){
-    hashed_filenames <- yaml.load_file(file_hash) %>% names %>% sort() %>% rev()
-    if(use_task_table) {
-      do_item_replace_tasks(sb_id, hashed_filenames, sources)
-    } else {
-      for (file in hashed_filenames){
-        item_replace_files(sb_id, files = file)
-      }
-    }
+    files <- c(files, names(yaml.load_file(file_hash))) %>% sort() 
   }
-  
-  if (length(files) > 0){
-    if(use_task_table) {
-      do_item_replace_tasks(sb_id, files, sources)
-    } else {
-      item_replace_files(sb_id, files = files)
-    }
+
+  # Throw error if there are no files given to push
+  stopifnot(length(files) > 0)
+
+  if(use_task_table) {
+    do_item_replace_tasks(sb_id, files, sources)
+  } else {
+    upload_and_record(sb_id, file = files)
   }
   
 }
