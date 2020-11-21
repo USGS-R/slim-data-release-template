@@ -43,18 +43,6 @@ sb_replace_files <- function(sb_id, ..., file_hash, use_task_table = TRUE, sourc
   
 }
 
-sb_render_post_xml <- function(sb_id, ..., xml_file = NULL, use_task_table = TRUE, sources = c()){
-  
-  if (is.null(xml_file)){
-    xml_file <- file.path(tempdir(), paste0(sb_id,'.xml'))
-  }
-  
-  render(filename = xml_file, ...)
-  
-  sb_replace_files(sb_id = sb_id, xml_file, use_task_table, sources)
-  
-}
-
 # Helper function to create a task_table for the files that need to be pushed to SB
 do_item_replace_tasks <- function(sb_id, files, sources) {
   
