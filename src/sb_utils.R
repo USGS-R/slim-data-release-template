@@ -89,7 +89,7 @@ do_item_replace_tasks <- function(sb_id, files, sources) {
     packages = c('sbtools', 'scipiper', 'dplyr'),
     sources = sources,
     final_targets = final_target,
-    finalize_funs = "combine_upload_times",
+    finalize_funs = "bind_rows",
     as_promises = FALSE)
   
   # Build the tasks
@@ -120,8 +120,4 @@ upload_and_record <- function(sb_id, file) {
   
   # Then record when it happened and return that as an obj
   return(tibble(file = file, sb_id = sb_id, time_uploaded_to_sb = timestamp_chr))
-}
-
-combine_upload_times <- function(...) {
-  bind_rows(list(...))
 }
