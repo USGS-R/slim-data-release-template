@@ -30,13 +30,14 @@ sb_replace_files <- function(sb_id, ..., file_hash, use_task_table = TRUE, sourc
 do_item_replace_tasks <- function(sb_id, files, sources) {
   
   # Define task table rows
-  task_df <- tibble(filepath = files) %>% mutate(task_name = paste0('uploaded_file_', row_number()))
+  task_df <- tibble(filepath = files) %>% 
+    mutate(task_name = sprintf('sb_%s_%s_file', sb_id, basename(filepath)))
   
   # Define task table columns
   sb_push <- scipiper::create_task_step(
     step_name = 'push_file_to_sb',
     target_name = function(task_name, step_name, ...){
-      sprintf("%s_pushed_to_sb", task_name)
+      task_name
     },
     command = function(task_name, ...){
       sprintf("upload_and_record(I('%s'), '%s')", sb_id, 
@@ -53,7 +54,8 @@ do_item_replace_tasks <- function(sb_id, files, sources) {
   
   # Create the task remakefile
   task_yml <- "file_upload_tasks.yml"
-  final_target <- "upload_timestamps"
+  final_target <- sprintf("upload_%s_timestamps", sb_id)
+  
   create_task_makefile(
     task_plan = task_plan,
     makefile = task_yml,
