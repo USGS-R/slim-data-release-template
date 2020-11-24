@@ -21,13 +21,12 @@ Need to have CRAN package `sbtools` installed
 This slim template is designed to keep everything in a single remake yaml. So all data munging, manipulation, and file writing happens there, in addition to the sciencebase uploads
 
 
-These are the two different "pushes" to sciencebase, one for xml (metadata) and another for data. It is somewhat arbitrary how these are split up (there could be a single push for all files, or a push for each individual file). I do it this way because I want metadata edits separate from data files, so that the data files aren't replaced everytime I fix a metadata typo or add information to a metadata field. 
+This is the single push to sciencebase, it does the xml (metadata) and data at the same time. Because the upload step uses an internal task table, you can specify all files that should be pushed to the same sbid at one time. Again, because the upload step uses an internal task table, data files aren't replaced everytime you fix a metadata typo or add information to a metadata field. 
 ```yaml
 targets:
   all:
     depends:
-      - sb_xml
-      - sb_data
+      - sb_posted
     
 ```
 
@@ -60,22 +59,21 @@ write final metadata files as you want them to appear in the data release.
   out_data/spatial.zip:
     command: sf_to_zip(zip_filename = target_name, 
       sf_object = sf_spatial_data, layer_name = I('spatial_data'))
+  
+  out_xml/fgdc_metadata.xml:
+    command: render(filename = target_name,
+      "in_text/text_data_release.yml",
+      spatial_metadata)
 ```
 
-Push the files to sciencebase using these two utility functions that are included in `src/sb_utils.R` of this repo template. If you are uploading many files at once using `sb_replace_files` (either in a file hash or just multiple files passed in through `...`), it is recommended to use a task table to do so. Internal task table methods are enabled by default. If you do not want to use an internal task table, set the `use_task_table = FALSE` when using `sb_replace_files`. You must also specify the file(s) where the sb_replace_files functions exist using the argument, `sources`. These task table instructions apply to `sb_render_post_xml`, too.
+Push the files to sciencebase using the `sb_replace_files` function from `src/sb_utils.R` of this repo template. If you are uploading many files at once using `sb_replace_files` (either in a file hash or just multiple files passed in through `...`), it is recommended to use a task table to do so. Internal task table methods are enabled by default. If you do not want to use an internal task table, set the `use_task_table = FALSE` when using `sb_replace_files`. You must also specify the file(s) where the `sb_replace_files` functions exist using the argument, `sources`. You can specify multiple files and a file hash file in one call to `sb_replace_files`. Currently, each `sb_replace_files` function can only push to one sbid. 
 
 ```yaml
-  sb_data:
+  sb_posted:
     command: sb_replace_files(sbid,
       "out_data/spatial.zip",
       "out_data/cars.csv",
-      sources = "src/sb_utils.R")
-      
-  sb_xml:
-    command: sb_render_post_xml(sbid,
-      "in_text/text_data_release.yml",
-      spatial_metadata, 
-      xml_file = I("out_xml/fgdc_metadata.xml"),
+      "out_xml/fgdc_metadata.xml",
       sources = "src/sb_utils.R")
 ```
 
