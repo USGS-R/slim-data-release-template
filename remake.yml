@@ -1,6 +1,8 @@
 packages:
   - tidyverse
   - meddle # at least v0.0.12
+  - scipiper
+  - readr
   - dssecrets
   - sbtools
   - sf
@@ -12,13 +14,8 @@ sources:
 targets:
   all:
     depends:
-      - sb_xml
-      - sb_data
+      - log/sb_posted_files.csv
     
-
-      
-  sbid:
-    command: c(I('5faaac68d34eb413d5df1f22'))
 
   sf_spatial_data:
     command: st_read('example_data/example_shapefile/example_shapefile.shp')
@@ -34,19 +31,20 @@ targets:
     command: file.copy(from = "example_data/example_cars.csv", 
       to = target_name)
   
-
   out_data/spatial.zip:
     command: sf_to_zip(zip_filename = target_name, 
       sf_object = sf_spatial_data, layer_name = I('spatial_data'))
 
-  
-  sb_data:
-    command: sb_replace_files(sbid,
-      "out_data/spatial.zip",
-      "out_data/cars.csv")
-      
-  sb_xml:
-    command: sb_render_post_xml(sbid,
+  out_xml/fgdc_metadata.xml:
+    command: render(filename = target_name,
       "in_text/text_data_release.yml",
-      spatial_metadata, 
-      xml_file = I("out_xml/fgdc_metadata.xml"))
+      spatial_metadata)
+    
+  log/sb_posted_files.csv:
+    command: sb_replace_files(filename = target_name, 
+      sb_id = I('5faaac68d34eb413d5df1f22'),
+      "out_data/spatial.zip",
+      "out_data/cars.csv",
+      "out_xml/fgdc_metadata.xml",
+      sources = "src/sb_utils.R")
+      

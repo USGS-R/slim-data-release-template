@@ -18,23 +18,16 @@ Need to have CRAN package `sbtools` installed
 
 ## remake.yml details
 
-This slim template is designed to keep everything in a single remake yaml. So all data munging, manipulation, and file writing happens there, in addition to the sciencebase uploads
+This slim template is designed to keep everything in a single remake yaml. So all data munging, manipulation, and file writing happens there, in addition to the sciencebase uploads.
 
 
-These are the two different "pushes" to sciencebase, one for xml (metadata) and another for data. It is somewhat arbitrary how these are split up (there could be a single push for all files, or a push for each individual file). I do it this way because I want metadata edits separate from data files, so that the data files aren't replaced everytime I fix a metadata typo or add information to a metadata field. 
+This is the single push to sciencebase, it does the xml (metadata) and data at the same time. Because the upload step uses an internal task table, you can specify all files that should be pushed to the same sbid at one time. Again, because the upload step uses an internal task table, data files aren't replaced everytime you fix a metadata typo or add information to a metadata field. The result of the sciencebase push step is a file with timestamps for when each file got pushed that can be checked into GitHub. Having the file with timestamps in GitHub will clearly show when updates were made and will render nicely without having to build the object target locally.
 ```yaml
 targets:
   all:
     depends:
-      - sb_xml
-      - sb_data
+      - log/sb_posted_files.csv
     
-```
-
-Here we define the data release location on sciencebase using the sciencebase identifier. 
-```yaml
-  sbid:
-    command: c(I('5faaac68d34eb413d5df1f22'))
 ```
 
 Read in (`st_read`) and manipulate data here. `extract_feature()` is from the `meddle` package and builds a list of structured spatial information for use in metadata files.
@@ -56,24 +49,26 @@ write final metadata files as you want them to appear in the data release.
     command: file.copy(from = "example_data/example_cars.csv", 
       to = target_name)
   
-
   out_data/spatial.zip:
     command: sf_to_zip(zip_filename = target_name, 
       sf_object = sf_spatial_data, layer_name = I('spatial_data'))
+  
+  out_xml/fgdc_metadata.xml:
+    command: render(filename = target_name,
+      "in_text/text_data_release.yml",
+      spatial_metadata)
 ```
 
-Push the files to sciencebase using these two utility functions that are included in `src/sb_utils.R` of this repo template
+Push the files to sciencebase using the `sb_replace_files` function from `src/sb_utils.R` of this repo template. If you are uploading many files at once using `sb_replace_files` (either in a file hash or just multiple files passed in through `...`), it is recommended to use a task table to do so. Internal task table methods are enabled by default. If you do not want to use an internal task table, set the `use_task_table = FALSE` when using `sb_replace_files`. You must also specify the file(s) where the `sb_replace_files` functions exist using the argument, `sources`. You can specify multiple files and a file hash file in one call to `sb_replace_files`. Currently, each `sb_replace_files` function can only push to one sbid. 
+
 ```yaml
-  sb_data:
-    command: sb_replace_files(sbid,
+  log/sb_posted_files.csv:
+    command: sb_replace_files(filename = target_name, 
+      sb_id = I('5faaac68d34eb413d5df1f22'),
       "out_data/spatial.zip",
-      "out_data/cars.csv")
-      
-  sb_xml:
-    command: sb_render_post_xml(sbid,
-      "in_text/text_data_release.yml",
-      spatial_metadata, 
-      xml_file = I("out_xml/fgdc_metadata.xml"))
+      "out_data/cars.csv",
+      "out_xml/fgdc_metadata.xml",
+      sources = "src/sb_utils.R")
 ```
 
 
