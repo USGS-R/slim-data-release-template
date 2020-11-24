@@ -7,7 +7,7 @@
 #' `do_item_replace_tasks`, `upload_and_record`, and `combine_upload_times` are defined. It 
 #' might be easier to put them all in the same file.
 #' 
-sb_replace_files <- function(sb_id, ..., file_hash, use_task_table = TRUE, sources = c()){
+sb_replace_files <- function(filename, sb_id, ..., file_hash, use_task_table = TRUE, sources = c()){
   
   files <- c(...)
   
@@ -19,11 +19,11 @@ sb_replace_files <- function(sb_id, ..., file_hash, use_task_table = TRUE, sourc
   stopifnot(length(files) > 0)
 
   if(use_task_table) {
-    do_item_replace_tasks(sb_id, files, sources)
+    out_log <- do_item_replace_tasks(sb_id, files, sources)
   } else {
-    upload_and_record(sb_id, file = files)
+    out_log <- upload_and_record(sb_id, file = files)
   }
-  
+  write_csv(out_log, filename)
 }
 
 # Helper function to create a task_table for the files that need to be pushed to SB
