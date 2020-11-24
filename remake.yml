@@ -1,6 +1,8 @@
 packages:
   - tidyverse
   - meddle # at least v0.0.12
+  - scipiper
+  - readr
   - dssecrets
   - sbtools
   - sf
@@ -12,12 +14,8 @@ sources:
 targets:
   all:
     depends:
-      - sb_posted
+      - log/sb_posted_files.csv
     
-
-      
-  sbid:
-    command: c(I('5faaac68d34eb413d5df1f22'))
 
   sf_spatial_data:
     command: st_read('example_data/example_shapefile/example_shapefile.shp')
@@ -42,8 +40,9 @@ targets:
       "in_text/text_data_release.yml",
       spatial_metadata)
     
-  sb_posted:
-    command: sb_replace_files(sbid,
+  log/sb_posted_files.csv:
+    command: sb_replace_files(filename = target_name, 
+      sb_id = I('5faaac68d34eb413d5df1f22'),
       "out_data/spatial.zip",
       "out_data/cars.csv",
       "out_xml/fgdc_metadata.xml",
