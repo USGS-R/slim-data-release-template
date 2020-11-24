@@ -92,5 +92,5 @@ upload_and_record <- function(sb_id, file) {
   timestamp_chr <- format(timestamp, "%Y-%m-%d %H:%M %Z")
   
   # Then record when it happened and return that as an obj
-  return(tibble(file = file, sb_id = sb_id, time_uploaded_to_sb = timestamp_chr))
+  return(tibble(filepath = file, sb_id = sb_id, time_uploaded_to_sb = timestamp_chr))
 }
