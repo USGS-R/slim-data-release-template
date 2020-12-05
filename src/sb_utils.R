@@ -7,6 +7,9 @@
 #' `do_item_replace_tasks`, `upload_and_record`, and `combine_upload_times` are defined. It 
 #' might be easier to put them all in the same file.
 #' 
+#' @details a `force = TRUE` or `scdel` on the target coming back from this will automatically ping 
+#' sciencebase again to check that all of the files exist. This might be helpful behavior if you've done a 
+#' manual delete of one or more files on sciencebase, or want to (again) verify all files exist up there
 sb_replace_files <- function(filename, sb_id, ..., file_hash, use_task_table = TRUE, sources = c()){
   
   files <- c(...)
@@ -21,14 +24,20 @@ sb_replace_files <- function(filename, sb_id, ..., file_hash, use_task_table = T
   if(use_task_table) {
     out_log <- do_item_replace_tasks(sb_id, files, sources)
   } else {
+    # note that unlike the task table version, this function call doesn't verify the files are on SB
     out_log <- upload_and_record(sb_id, file = files)
   }
   write_csv(out_log, filename)
 }
 
+# this yaml is a global so we can refer to it in the task table function and the combiner.
+# wouldn't be needed with https://github.com/USGS-R/scipiper/issues/116
+
+
 # Helper function to create a task_table for the files that need to be pushed to SB
 do_item_replace_tasks <- function(sb_id, files, sources) {
   
+  task_yml <- "file_upload_tasks.yml"
   # Define task table rows
   task_df <- tibble(filepath = files) %>% 
     mutate(task_name = sprintf('sb_%s_%s_file', sb_id, basename(filepath)))
@@ -53,23 +62,30 @@ do_item_replace_tasks <- function(sb_id, files, sources) {
     add_complete = FALSE)
   
   # Create the task remakefile
-  task_yml <- "file_upload_tasks.yml"
+  
   final_target <- sprintf("upload_%s_timestamps", sb_id)
   
   create_task_makefile(
     task_plan = task_plan,
     makefile = task_yml,
-    packages = c('sbtools', 'scipiper', 'dplyr'),
+    packages = c('sbtools', 'scipiper', 'dplyr', 'remake'),
     sources = sources,
     final_targets = final_target,
     finalize_funs = "bind_rows",
     as_promises = FALSE)
   
-  # Build the tasks
-  loop_tasks(task_plan = task_plan, task_makefile = task_yml, num_tries = 3)
-  upload_timestamps <- remake::fetch(final_target, remake_file=task_yml)
+  post_finished <- FALSE
+  while (!post_finished){
+    # Build the tasks
+    loop_tasks(task_plan = task_plan, task_makefile = task_yml, num_tries = 3)
+    upload_timestamps <- remake::fetch(final_target, remake_file=task_yml)
+    post_finished <- verify_uploads(upload_timestamps, remake_file=task_yml)
+  }
   
-  # Remove the temporary task makefile for uploading the files to ScienceBase
+  # Remove the temporary target from remake's DB; it won't necessarily be a 
+  # unique name and we don't need it to persist, especially since killing the task yaml
+  scdel(final_target, remake_file=task_yml)
+  # delete task makefile for uploading the files to ScienceBase
   file.remove(task_yml)
   
   return(upload_timestamps)
@@ -78,14 +94,12 @@ do_item_replace_tasks <- function(sb_id, files, sources) {
 upload_and_record <- function(sb_id, file) {
   
   # First verify that you are logged into SB. Need to do this for each task that calls 
+  sb_secret_login()
   # `upload_and_record` in case there are any long-running uploads that timeout the session.
-  if (!sbtools::is_logged_in()){
-    sb_secret <- dssecrets::get_dssecret("cidamanager-sb-srvc-acct")
-    sbtools::authenticate_sb(username = sb_secret$username, password = sb_secret$password)
-  }
+
   
   # First, upload the file
-  item_replace_files(sb_id, file)
+  item_replace_files(sb_id, files = file)
   
   timestamp <- Sys.time()
   attr(timestamp, "tzone") <- "UTC"
@@ -93,4 +107,37 @@ upload_and_record <- function(sb_id, file) {
   
   # Then record when it happened and return that as an obj
   return(tibble(filepath = file, sb_id = sb_id, time_uploaded_to_sb = timestamp_chr))
+}
+
+verify_uploads <- function(file_tbl, remake_file){
+  
+  sb_secret_login()
+  sb_id <- unique(file_tbl$sb_id)
+  stopifnot(length(sb_id) == 1)
+  # item_list_files _could_ fail, but that is pretty rare. If it does, this pipeline will break
+  # this call is not robust to a tbl w/ more than one unique sb_id
+  sb_files <- sbtools::item_list_files(sb_id) %>% pull(fname)
+  
+  if (any(duplicated(sb_files))){
+    stop('there are duplicated files on %scatalog/item/', sbtools:::pkg.env$domain, sb_id)
+  }
+  
+  unposted_files <- file_tbl %>% filter(!basename(filepath) %in% sb_files) %>% 
+    mutate(target_name = sprintf('sb_%s_%s_file', sb_id, basename(filepath))) %>% 
+    pull(target_name)
+  
+  if (length(unposted_files) > 0){
+    remake::delete(unposted_files, remake_file = task_yml)
+    FALSE
+  } else{
+    TRUE
+  }
+}
+
+
+sb_secret_login <- function(){
+  if (!sbtools::is_logged_in()){
+    sb_secret <- dssecrets::get_dssecret("cidamanager-sb-srvc-acct")
+    sbtools::authenticate_sb(username = sb_secret$username, password = sb_secret$password)
+  }
 }
