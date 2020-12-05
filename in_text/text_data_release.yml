@@ -1,11 +1,9 @@
 title: >-
-  Data release: [my title here] (Provisional Data Release)
+  Data release: [your title here]
 
 
 abstract: >-
-  These data are preliminary or provisional and are subject to revision. They are being provided to meet the need for timely best science. 
-  The data have not received final approval by the U.S. Geological Survey (USGS) and are provided on the condition that neither the USGS 
-  nor the U.S. Government shall be held liable for any damages resulting from the authorized or unauthorized use of the data.
+  [a description of this data release]
       
 authors: ["[NAME 1]", "[NAME 2]"]
 pubdate: 2020 # replace with actual year, e.g., 2020
@@ -36,7 +34,7 @@ file-format: a single comma-delimited file and a single zipped shapefile
 entities:
   -
     data-name: example_cars.csv
-    data-description: A csv file containing...
+    data-description: A csv file containing important information...
     attributes:
     -
       attr-label: speed
@@ -56,7 +54,7 @@ entities:
       data-units: NA
   -
     data-name: example_shapefile.zip
-    data-description: A csv file containing...
+    data-description: A zip file containing...
     attributes:
     -
       attr-label: x
@@ -112,7 +110,7 @@ contact-zip: 53562
 
 metadata-person: Jordan S. Read
 metadata-position: Research Civil Engineer
-metadata-phone: 608-821-3922
+metadata-phone: 608-821-3921
 metadata-fax: 608-821-3817
 metadata-email: jread@usgs.gov
 metadata-address: "8505 Research Way"
