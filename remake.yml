@@ -3,7 +3,6 @@ packages:
   - meddle # at least v0.0.12
   - scipiper
   - readr
-  - dssecrets
   - sbtools
   - sf
 
