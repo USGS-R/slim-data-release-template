@@ -47,7 +47,7 @@ write final metadata files as you want them to appear in the data release.
 ```yaml
   out_data/cars.csv:
     command: file.copy(from = "example_data/example_cars.csv", 
-      to = target_name)
+      to = target_name, overwrite = TRUE)
   
   out_data/spatial.zip:
     command: sf_to_zip(zip_filename = target_name, 
