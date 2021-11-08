@@ -12,6 +12,6 @@ sf_to_zip <- function(zip_filename, sf_object, layer_name){
     filter(str_detect(string = filename, pattern = layer_name)) %>% pull(filename)
   
   setwd(dsn)
-  zip(file.path(cdir, zip_filename), files = files_to_zip)
+  zip::zip(file.path(cdir, zip_filename), files = files_to_zip)
   setwd(cdir)
 }
