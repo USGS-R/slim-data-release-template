@@ -92,7 +92,6 @@ themekeywords: ["machine learning", "deep learning", "hybrid modeling", "water",
 usage-rules: >-
   These data are open access usable via creative commons as long as original data providers are acknowledged
 
-descgeog: "Lake polygons as defined by the national hydrography dataset high resolution"
 data-publisher: U.S. Geological Survey
 indirect-spatial: U.S.A.
 latitude-res: 0.00001
