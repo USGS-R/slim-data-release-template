@@ -9,3 +9,4 @@ out_data/*.csv
 out_data/*.zip
 out_xml/*.xml
 in_data/*
+!in_data/.empty
