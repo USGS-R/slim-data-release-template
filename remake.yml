@@ -44,6 +44,6 @@ targets:
       sb_id = I('5faaac68d34eb413d5df1f22'),
       "out_data/spatial.zip",
       "out_data/cars.csv",
-      sources = "src/sb_utils.R",
-      "out_xml/fgdc_metadata.xml")
+      "out_xml/fgdc_metadata.xml",
+      sources = "src/sb_utils.R")
       
