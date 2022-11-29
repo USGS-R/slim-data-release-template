@@ -6,7 +6,7 @@
 #' @param file_hash a yaml file with filepath and hash value pairs. All files named in the 
 #' `file_hash` will be uploaded to sciencebase
 #' @param sources filepath(s) for where all of the functions that are needed for running 
-#' `sb_replace_files` exsit. For example, where `sb_replace_files`, `sb_render_post_xml`, 
+#' `sb_replace_files` exist. For example, where `sb_replace_files`, `sb_render_post_xml`, 
 #' `do_item_replace_tasks`, `upload_and_record`, and `combine_upload_times` are defined. It 
 #' is recommended to put them all in the same file.
 #' 
