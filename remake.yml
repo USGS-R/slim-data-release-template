@@ -16,7 +16,7 @@ targets:
       - log/sb_posted_files.csv
 
   # create target of spatial file
-  # please note that the extract_feature function (below) must be run to create certain pieces of spatial metadata
+  # please note that the extract_feature function (below) from the meddle package must be run to create certain pieces of spatial metadata
   # if you are not uploading any spatial data files to your data release,
   # you will need to find a shapefile that represents the geographic area or your data release
   # upload this file to your pipeline repostiory, read it in with the read_spatial_file function below, and extract_feature will pull the necessary metadata
@@ -30,7 +30,7 @@ targets:
   
   # grab metadata from spatial file
   spatial_metadata:
-    command: extract_feature(sf_spatial_data)
+    command: meddle::extract_feature(sf_spatial_data)
     
   out_data/cars.csv:
     command: file.copy(from = "example_data/example_cars.csv", 
