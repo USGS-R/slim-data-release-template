@@ -31,6 +31,8 @@ cross-cites:
 process-date: !expr format(Sys.time(),'%Y%m%d')
 file-format: a single comma-delimited file and a single zipped shapefile
 
+# ----entity and attribute information---- 
+# 
 entities:
   -
     data-name: example_cars.csv
@@ -40,7 +42,7 @@ entities:
       attr-label: speed
       attr-def: definition of column_name_1
       attr-defs: >-
-        citation or URL of column_name_1. If citation, should appear in cross-cites. Can use NA or "This release"
+        location where attributes are deinfed - can be "This data release" or a link to another data source page
       data-min: NA
       data-max: NA
       data-units: NA
@@ -48,7 +50,7 @@ entities:
       attr-label: dist
       attr-def: definition of column_name_2
       attr-defs: >-
-        citation or URL of column_name_2. If citation, should appear in cross-cites. Can use NA or "This release"
+        location where attributes are deinfed - can be "This data release" or a link to another data source page
       data-min: NA
       data-max: NA
       data-units: NA
@@ -60,7 +62,7 @@ entities:
       attr-label: x
       attr-def: definition of x
       attr-defs: >-
-        citation or URL of x. If citation, should appear in cross-cites. Can use NA or "This release"
+        location where attributes are deinfed - can be "This data release" or a link to another data source page
       data-min: NA
       data-max: NA
       data-units: NA  
@@ -76,7 +78,7 @@ entities:
       attr-label: z
       attr-def: definition of z
       attr-defs: >-
-        citation or URL of z. If citation, should appear in cross-cites. Can use NA or "This release"
+        location where attributes are deinfed - can be "This data release" or a link to another data source page
       data-min: NA
       data-max: NA
       data-units: NA
