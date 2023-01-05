@@ -32,7 +32,6 @@ process-date: !expr format(Sys.time(),'%Y%m%d')
 file-format: a single comma-delimited file and a single zipped shapefile
 
 # ----entity and attribute information---- 
-# 
 entities:
   -
     data-name: example_cars.csv
