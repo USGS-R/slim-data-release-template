@@ -5,6 +5,7 @@ packages:
   - readr
   - sbtools
   - sf
+  - yaml
 
 sources:
   - src/sb_utils.R
