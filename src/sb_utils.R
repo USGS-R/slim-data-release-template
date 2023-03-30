@@ -103,7 +103,14 @@ do_item_replace_tasks <- function(sb_id, files, sources) {
 upload_and_record <- function(sb_id, filepath) {
   
   # First verify that you are logged into SB. Need to do this for each task that calls 
-  sb_secret_login()
+  if (!sbtools::is_logged_in()) {
+    if (require(dssecrets)) {
+      message("ScienceBase is not logged in. Using dssecrets to log in with the cidamanager-sb-srvc-acct secret")
+      sb_secret_login()
+    } else {
+      stop("ScienceBase is not logged in. Log in with sbtools::authenticate_sb() and try again!")
+    }
+  }
   
   # Second, upload the file
   item_replace_files(sb_id, files = filepath)
@@ -128,7 +135,15 @@ upload_and_record <- function(sb_id, filepath) {
 #' or if any duplicated file names exist on sciencebase for this `sb_id`. 
 verify_uploads <- function(file_tbl, tgt_names, remake_file){
   
-  sb_secret_login()
+  # First verify that you are logged into SB. Need to do this for each task that calls 
+  if (!sbtools::is_logged_in()) {
+    if (require(dssecrets)) {
+      message("ScienceBase is not logged in. Using dssecrets to log in with the cidamanager-sb-srvc-acct secret")
+      sb_secret_login()
+    } else {
+      stop("ScienceBase is not logged in. Log in with sbtools::authenticate_sb() and try again!")
+    }
+  }
   sb_id <- unique(file_tbl$sb_id)
   # this call is not robust to a tbl w/ more than one unique sb_id
   stopifnot(length(sb_id) == 1)
