@@ -18,6 +18,22 @@
 #' treated as a dependency. If you feel the need to put `sources = I(c('file1.R','file2.R'))` note that 
 #' remake won't track the contents of the files to trigger re-builds, just the file names (because of the I()).
 #' I would suggest keeping every function and variable you need in one source file for this pattern
+
+sb_replace_files_log <- function(filename, sb_id, ..., file_hash, sources = c()){
+  
+  files <- c(...)
+  
+  if (!missing(file_hash)){
+    files <- c(files, names(yaml.load_file(file_hash))) %>% sort() 
+  }
+  
+  # Throw error if there are no files given to push
+  stopifnot(length(files) > 0)
+  
+  do_item_replace_tasks(sb_id, files, sources) %>% 
+    write_csv(filename)
+}
+
 sb_replace_files <- function(filename, sb_id, ..., file_hash, sources = c()){
   
   files <- c(...)
