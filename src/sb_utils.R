@@ -104,7 +104,7 @@ upload_and_record <- function(sb_id, filepath) {
   
   # First verify that you are logged into SB. Need to do this for each task that calls 
   if (!sbtools::is_logged_in()) {
-    if (require(dssecrets)) {
+    if (suppressWarnings(suppressMessages(require(dssecrets)))) {
       message("ScienceBase is not logged in. Using dssecrets to log in with the cidamanager-sb-srvc-acct secret")
       sb_secret_login()
     } else {
@@ -137,7 +137,7 @@ verify_uploads <- function(file_tbl, tgt_names, remake_file){
   
   # First verify that you are logged into SB. Need to do this for each task that calls 
   if (!sbtools::is_logged_in()) {
-    if (require(dssecrets)) {
+    if (suppressWarnings(suppressMessages(require(dssecrets)))) {
       message("ScienceBase is not logged in. Using dssecrets to log in with the cidamanager-sb-srvc-acct secret")
       sb_secret_login()
     } else {
