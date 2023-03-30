@@ -18,6 +18,22 @@
 #' treated as a dependency. If you feel the need to put `sources = I(c('file1.R','file2.R'))` note that 
 #' remake won't track the contents of the files to trigger re-builds, just the file names (because of the I()).
 #' I would suggest keeping every function and variable you need in one source file for this pattern
+
+sb_replace_files_log <- function(filename, sb_id, ..., file_hash, sources = c()){
+  
+  files <- c(...)
+  
+  if (!missing(file_hash)){
+    files <- c(files, names(yaml.load_file(file_hash))) %>% sort() 
+  }
+  
+  # Throw error if there are no files given to push
+  stopifnot(length(files) > 0)
+  
+  do_item_replace_tasks(sb_id, files, sources) %>% 
+    write_csv(filename)
+}
+
 sb_replace_files <- function(filename, sb_id, ..., file_hash, sources = c()){
   
   files <- c(...)
@@ -103,7 +119,12 @@ do_item_replace_tasks <- function(sb_id, files, sources) {
 upload_and_record <- function(sb_id, filepath) {
   
   # First verify that you are logged into SB. Need to do this for each task that calls 
-  sb_secret_login()
+  if (!sbtools::is_logged_in()) {
+    if (suppressWarnings(suppressMessages(require(dssecrets)))) {
+      message("ScienceBase is not logged in. Using dssecrets to log in with the cidamanager-sb-srvc-acct secret")
+      sb_secret_login()
+    }
+  }
   
   # Second, upload the file
   item_replace_files(sb_id, files = filepath)
@@ -128,7 +149,13 @@ upload_and_record <- function(sb_id, filepath) {
 #' or if any duplicated file names exist on sciencebase for this `sb_id`. 
 verify_uploads <- function(file_tbl, tgt_names, remake_file){
   
-  sb_secret_login()
+  # First verify that you are logged into SB. Need to do this for each task that calls 
+  if (!sbtools::is_logged_in()) {
+    if (suppressWarnings(suppressMessages(require(dssecrets)))) {
+      message("ScienceBase is not logged in. Using dssecrets to log in with the cidamanager-sb-srvc-acct secret")
+      sb_secret_login()
+    }
+  }
   sb_id <- unique(file_tbl$sb_id)
   # this call is not robust to a tbl w/ more than one unique sb_id
   stopifnot(length(sb_id) == 1)
@@ -160,6 +187,7 @@ verify_uploads <- function(file_tbl, tgt_names, remake_file){
 sb_secret_login <- function(){
   if (!sbtools::is_logged_in()){
     sb_secret <- dssecrets::get_dssecret("cidamanager-sb-srvc-acct")
+    message(paste("Using the secret dated", sb_secret$timeStamp, "to log in."))
     sbtools::authenticate_sb(username = sb_secret$username, password = sb_secret$password)
   }
 }
