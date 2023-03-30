@@ -175,6 +175,7 @@ verify_uploads <- function(file_tbl, tgt_names, remake_file){
 sb_secret_login <- function(){
   if (!sbtools::is_logged_in()){
     sb_secret <- dssecrets::get_dssecret("cidamanager-sb-srvc-acct")
+    message(paste("Using the secret dated", sb_secret$timeStamp, "to log in."))
     sbtools::authenticate_sb(username = sb_secret$username, password = sb_secret$password)
   }
 }
