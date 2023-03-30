@@ -107,8 +107,6 @@ upload_and_record <- function(sb_id, filepath) {
     if (suppressWarnings(suppressMessages(require(dssecrets)))) {
       message("ScienceBase is not logged in. Using dssecrets to log in with the cidamanager-sb-srvc-acct secret")
       sb_secret_login()
-    } else {
-      stop("ScienceBase is not logged in. Log in with sbtools::authenticate_sb() and try again!")
     }
   }
   
@@ -140,8 +138,6 @@ verify_uploads <- function(file_tbl, tgt_names, remake_file){
     if (suppressWarnings(suppressMessages(require(dssecrets)))) {
       message("ScienceBase is not logged in. Using dssecrets to log in with the cidamanager-sb-srvc-acct secret")
       sb_secret_login()
-    } else {
-      stop("ScienceBase is not logged in. Log in with sbtools::authenticate_sb() and try again!")
     }
   }
   sb_id <- unique(file_tbl$sb_id)
