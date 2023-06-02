@@ -1,3 +1,5 @@
+Active development moved to https://code.usgs.gov/wma/wp/data-releases/slim-data-release-template
+
 # slim-data-release-template
 
 
